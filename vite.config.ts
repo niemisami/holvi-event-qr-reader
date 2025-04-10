@@ -7,9 +7,6 @@ export default defineConfig({
   plugins: [react(), VitePWA({
     registerType: 'autoUpdate',
     injectRegister: false,
-    devOptions: {
-      enabled: false
-    },
 
     pwaAssets: {
       disabled: false,
