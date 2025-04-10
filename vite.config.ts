@@ -33,4 +33,7 @@ export default defineConfig({
       type: 'module',
     },
   })],
+  optimizeDeps: {
+    exclude: ['@preflower/barcode-detector-polyfill']
+  }
 })

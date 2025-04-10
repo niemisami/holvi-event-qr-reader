@@ -1,0 +1,7 @@
+#scanner {
+  max-width: 25rem;
+  aspect-ratio: 1;
+  background-color: #1a1a1a;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
