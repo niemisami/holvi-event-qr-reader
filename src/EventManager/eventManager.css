@@ -1,0 +1,14 @@
+#event-manager {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+#event-manager main {
+  flex: 1;
+  flex-basis: 50%;
+}
+
+#event-manager aside {
+  max-width: 25rem;
+}
