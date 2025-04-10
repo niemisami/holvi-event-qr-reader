@@ -26,7 +26,7 @@ export type HolviTicket = {
 /**
  * `extraFields` are added to the sheet by the app
  */
-const holviSheetData: { field: keyof HolviTicket, header: string, extraField?: boolean }[] = [
+export const holviSheetData: { field: keyof HolviTicket, header: string, extraField?: boolean }[] = [
   { field: 'orderNumber', header: 'Tilaus' },
   { field: 'receiptNumber', header: 'Kuitin numero' },
   { field: 'ticketId', header: 'Tilauskoodi' },
@@ -58,7 +58,7 @@ const parseSheetsResponse = (sheetRows: string[][]): HolviTicket[] => {
     if(index === -1) {
       missingHeaders.push(sheetField)
     }
-    return { field: sheetField.header, index }
+    return { field: sheetField.field, index }
   })
 
   if(missingHeaders.length > 0) {
@@ -133,33 +133,6 @@ export const useFetchHolviTickets = (config: GoogleSheetConfig | null) => {
         setError(error)
         setIsLoading(false)
       })
-  }, [config])
-  return {
-    isLoading,
-    error,
-    tickets
-  }
-}
-
-export const useMarkHolviTicketCompleted = (config: GoogleSheetConfig | null) => {
-  const [isLoading, setIsLoading] = useState(false)
-  const [tickets, setTickets] = useState<HolviTicket[] | null>(null)
-  const [error, setError] = useState<string | null>(null)
-
-  useEffect(() => {
-    if(isValidConfig(config)) {
-      fetchHolviTickets(
-        config,
-        () => setIsLoading(true),
-        (data) => {
-          setTickets(data)
-          setIsLoading(false)
-        },
-        (error) => {
-          setError(error)
-          setIsLoading(false)
-        })
-    }
   }, [config])
   return {
     isLoading,
