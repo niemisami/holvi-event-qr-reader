@@ -1,7 +1,6 @@
 import { useCallback, useState } from 'react'
-import { GoogleSheetConfig, isValidConfig, UpdateSheetResult, updateSheet } from '../google'
+import { GoogleSheetConfig, isValidConfig, updateSheet, UpdateSheetResult } from '../google'
 import { tryCatch } from '../helpers'
-import { HolviTicket } from './useFetchHolviTickets'
 
 
 const markHolviTickedCompleted = async (
