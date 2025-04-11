@@ -25,13 +25,14 @@ const Scanner = ({ onScanned, isScanned }: Props) => {
 
   return (
     <>
-      <button onClick={() => setIsScannerOpen(!isScannerOpen)}>
-        {isScannerOpen ? 'Close Scanner' : 'Open Scanner'}
-      </button>
-      {isScanned
-        ? <button onClick={() => onScanned(null)}>🔍 New scan</button>
-        : null}
-
+      <div>
+        <button onClick={() => setIsScannerOpen(!isScannerOpen)}>
+          {isScannerOpen ? 'Close Scanner' : 'Open Scanner'}
+        </button>
+        {isScanned
+          ? <button onClick={() => onScanned(null)}>🔍 New scan</button>
+          : null}
+      </div>
       <div id='scanner'>
         {isScannerOpen
           ?

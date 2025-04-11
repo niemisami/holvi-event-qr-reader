@@ -4,20 +4,15 @@ import SetupForm from './SetupForm/SetupForm'
 import { EventManager } from './EventManager/EventManager';
 import useLocalStorage from './hooks/useLocalStorage';
 
+const defaultManagerData = { spreadsheetId: '', range: '' }
+
 export const Authorized = () => {
   const [managerData, setManagerData] = useState<{ spreadsheetId: string, range: string } | null>(null);
 
-  const [persistedManagerData, setPersistedManagerData] = useLocalStorage('managerData', { spreadsheetId: '', range: '' });
+  const [persistedManagerData, setPersistedManagerData] = useLocalStorage('managerData', defaultManagerData);
 
   return (
     <div id='app'>
-      <SetupForm
-        onSubmit={data => {
-          setManagerData(data)
-          setPersistedManagerData(data)
-        }}
-        defaultValues={persistedManagerData}
-      />
       {managerData
         ? (
           <EventManager
@@ -26,10 +21,19 @@ export const Authorized = () => {
           />
         )
         : (
-          <div>
-            <h2>Welcome to the Event Manager</h2>
-            <p>Please fill out the form to get started.</p>
-          </div>
+          <>
+            <SetupForm
+              onSubmit={data => {
+                setManagerData(data)
+                setPersistedManagerData(data)
+              }}
+              defaultValues={persistedManagerData}
+            />
+            <div>
+              <h2>Welcome to the Event Manager</h2>
+              <p>Please fill out the form to get started.</p>
+            </div>
+          </>
         )
       }
     </div>

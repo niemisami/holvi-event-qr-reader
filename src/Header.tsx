@@ -7,6 +7,7 @@ const Header = ({ onLogout }: { onLogout?: () => void }) => {
         {onLogout
           ? (
             <button
+              className='logout-button'
               onClick={onLogout}>
               🚪 Log out
             </button>

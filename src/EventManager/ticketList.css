@@ -1,0 +1,29 @@
+#ticket-list {
+  li {
+    padding: 0.5rem 1rem;
+  }
+
+  li>div {
+    display: flex;
+    font-size: 0.9em;
+  }
+
+  li:nth-child(odd) {
+    background-color: #313032;
+  }
+
+  .list-status {
+    margin-left: 1rem;
+  }
+}
+
+.ticket-details {
+  width: 100%;
+}
+
+.ticket-details__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}

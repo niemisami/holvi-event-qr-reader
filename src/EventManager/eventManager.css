@@ -2,13 +2,25 @@
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
+  gap: 1rem;
 }
 
 #event-manager main {
-  flex: 1;
-  flex-basis: 50%;
+  flex-basis: 30rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-#event-manager aside {
-  max-width: 25rem;
+#event-manager aside{
+  flex: 1;
+  background-color: #313032;
+  border-radius: 0.5rem;
+  padding: 0.5rem 2rem;
+  padding-bottom: 2rem;
+  align-self: flex-start;
+}
+
+.ticket-details {
+  display: flex;
 }

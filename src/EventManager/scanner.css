@@ -1,5 +1,6 @@
 #scanner {
-  max-width: 25rem;
+  width: 25rem;
+  max-width: 100%;
   aspect-ratio: 1;
   background-color: #1a1a1a;
   border-radius: 0.5rem;

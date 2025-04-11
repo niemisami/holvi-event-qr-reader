@@ -86,7 +86,6 @@ export const EventManager = ({ spreadsheetId, range }: Props) => {
 
   return (
     <div>
-      <h2>Event Manager</h2>
       {error ? <p className='error'>{error}</p> : null}
       <div id='event-manager'>
         <main>
@@ -94,43 +93,55 @@ export const EventManager = ({ spreadsheetId, range }: Props) => {
             onScanned={handleOnScanned}
             isScanned={!!ticket}
           />
-          <div className='ticket-details'>
+        </main>
+        <aside>
+          <div>
+            <div className='ticket-details__header'>
+              <h3>Ticket details</h3>
+              {ticket && !isUpdateSuccess
+                ? (
+                  <button onClick={markHolviTickedCompleted} style={{ marginLeft: 'auto' }}>
+                    {isLoadingMarkCompleted
+                      ? 'Loading...'
+                      : '✅ Mark as used'}
+                  </button>
+                )
+                : null}
+            </div>
             {errorMarkCompleted
               ? <div className='error'>{errorMarkCompleted}</div>
               : null}
-
-            {ticket && (
-              <div>
-                <h3>Ticket details</h3>
-                <p><b>{ticket.firstName || '-'} {ticket.lastName || '-'}</b> {ticket.email || '-'}</p>
-                <span>
-                  {(ticket.isHandled == 'FALSE' && isUpdateSuccess)
-                    ? <span className='alert alert__error'>Unused</span>
-                    : <>
-                      <b className='alert alert__success'>Used</b> {ticket.handledBy}
-                      <div>
-                        <small>{ticket.handledAt}</small>
-                      </div>
-                    </>
-                  }
-                </span>
-                {!isUpdateSuccess
-                  ? (
-                    <button onClick={markHolviTickedCompleted}>
-                      {isLoadingMarkCompleted
-                        ? 'Loading...'
-                        : 'Mark as completed'}
-                    </button>
-                  )
-                  : null}
-              </div>
-            )}
+            {ticket
+              ? (
+                <div className='ticket-details'>
+                  <div>
+                    <b>{ticket.firstName || '-'} {ticket.lastName || '-'}</b>
+                    <div>{ticket.email || '-'}</div>
+                  </div>
+                  <span className='list-status'>
+                    {ticket.isHandled == 'FALSE'
+                      ? <span className='alert alert__error'>Unhandled</span>
+                      : <>
+                        <b className='alert alert__success'>Handled</b>{ticket.handledBy} - <small>{ticket.handledAt}</small>
+                      </>
+                    }
+                  </span>
+                </div>
+              )
+              : (
+                <>
+                  <ol className='text-muted'>
+                    <li>Start scanner</li>
+                    <li>Scan QR-code</li>
+                    <li>View ticket details here</li>
+                  </ol>
+                </>
+              )}
           </div>
-        </main>
-        <aside>
-          <TicketList tickets={tickets || []} />
         </aside>
+
       </div>
+      <TicketList tickets={tickets || []} />
     </div>
   )
 }

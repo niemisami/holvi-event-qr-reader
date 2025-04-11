@@ -9,7 +9,13 @@
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
+}
+
+.logout-button {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
 }
 
 #main {
@@ -51,4 +57,8 @@
 
 .form-container {
   flex-basis: 30%;
+}
+
+.text-muted {
+  color: #a09ca0;
 }
