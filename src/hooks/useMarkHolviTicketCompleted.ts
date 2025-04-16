@@ -10,7 +10,6 @@ const markHolviTickedCompleted = async (
   onSuccess: (data: UpdateSheetResult) => void,
   onError: (error: string) => void
 ) => {
-
   onStart()
   const [googleError, response] = await tryCatch(updateSheet(config, data))
   if(googleError) {
@@ -26,6 +25,12 @@ const useMarkHolviTicketCompleted = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [result, setResult] = useState<UpdateSheetResult | null>(null)
   const [error, setError] = useState<string | null>(null)
+
+  const reset = useCallback(() => {
+    setIsLoading(false)
+    setResult(null)
+    setError(null)
+  }, [])
 
   const action = useCallback((config: GoogleSheetConfig | null) => {
     if(!isValidConfig(config)) {
@@ -56,7 +61,8 @@ const useMarkHolviTicketCompleted = () => {
     isLoading,
     error,
     action,
-    result
+    result,
+    reset
   }
 }
 

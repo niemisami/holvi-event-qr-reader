@@ -46,7 +46,8 @@ export const EventManager = ({ spreadsheetId, range }: Props) => {
     isLoading: isLoadingMarkCompleted,
     error: errorMarkCompleted,
     action,
-    result
+    result,
+    reset
   } = useMarkHolviTicketCompleted()
 
   const handleOnScanned = useCallback((ticketId: string | null) => {
@@ -60,8 +61,9 @@ export const EventManager = ({ spreadsheetId, range }: Props) => {
       return
     }
     setTicket(ticket)
+    reset()
 
-  }, [tickets])
+  }, [tickets, reset])
 
 
   const markHolviTickedCompleted = () => {
@@ -82,7 +84,7 @@ export const EventManager = ({ spreadsheetId, range }: Props) => {
     }
   }
 
-  const isUpdateSuccess = result?.updatedRows != null || (ticket && ticket.isHandled === 'TRUE')
+  const isUpdateSuccess = result?.updatedRows != null || !!ticket
 
   return (
     <div>
