@@ -7,6 +7,12 @@ const SCOPE = 'https://www.googleapis.com/auth/spreadsheets'
 const _isAuthenticated = () => {
   const credentials = localStorage.getItem('tokenResponse')
   const user = localStorage.getItem('user')
+
+  console.log({
+    credentials,
+    user
+  })
+
   return !!credentials && !!user
 }
 
@@ -22,7 +28,7 @@ const useIsAuthenticated = () => {
       accessToken: tokenResponse.access_token,
       tokenType: tokenResponse.token_type
     }))
-    setIsAuthenticated(_isAuthenticated)
+    setIsAuthenticated(_isAuthenticated())
   }, [])
 
   const logout = useCallback(() => {
@@ -43,7 +49,11 @@ const useIsAuthenticated = () => {
       if(creds.credential) {
         const decoded = jwtDecode(creds.credential) as { email: string, name: string }
         localStorage.setItem('user', JSON.stringify(decoded))
-        setIsAuthenticated(_isAuthenticated)
+
+        if(!_isAuthenticated()) {
+          return login()
+        }
+        setIsAuthenticated(_isAuthenticated())
       }
     }
   });
