@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import './eventManager.css'
 
 import { GoogleSheetConfig } from '../google.ts'
@@ -9,12 +9,16 @@ import Scanner from './Scanner.tsx'
 import useMarkHolviTicketCompleted from '../hooks/useMarkHolviTicketCompleted.ts'
 
 const useCredentials = () => {
-  const [credentials] = useLocalStorage<{ accessToken: string, tokenType: string, email: string }>('credentialResponse')
+  const [credentials] = useLocalStorage<{ accessToken: string, tokenType: string }>('tokenResponse')
+  const [user] = useLocalStorage<{ email: string, name: string }>('user')
 
-  if(!credentials) {
+  if(!credentials || !user) {
     throw new Error('User is not authenticated!')
   }
-  return credentials
+  return useMemo(() => ({
+    ...credentials,
+    ...user
+  }), [credentials, user])
 }
 
 type Props = {
@@ -32,15 +36,19 @@ export const EventManager = ({ spreadsheetId, range }: Props) => {
     setConfig({
       ...credentials,
       spreadsheetId,
-      range
+      range,
+      email: credentials.email
     })
   }, [spreadsheetId, range, credentials])
 
   const {
     // isLoading,
     error,
-    tickets
+    tickets,
+    refetch: refetchTickets,
   } = useFetchHolviTickets(config)
+
+  const [handledTickets, setHandledTicket] = useState(new Set<string>())
 
   const {
     isLoading: isLoadingMarkCompleted,
@@ -84,7 +92,12 @@ export const EventManager = ({ spreadsheetId, range }: Props) => {
     }
   }
 
-  const isUpdateSuccess = result?.updatedRows != null || !!ticket
+  useEffect(() => {
+    if(result?.updatedRows && ticket) {
+      setHandledTicket(handledTickets => new Set(handledTickets.add(ticket.ticketId)))
+      setTicket(null)
+    }
+  }, [result?.updatedRows, ticket])
 
   return (
     <div>
@@ -99,14 +112,20 @@ export const EventManager = ({ spreadsheetId, range }: Props) => {
         <aside>
           <div>
             <div className='ticket-details__header'>
-              <h3>Ticket details</h3>
-              {ticket && !isUpdateSuccess
+              {ticket
                 ? (
-                  <button onClick={markHolviTickedCompleted} style={{ marginLeft: 'auto' }}>
-                    {isLoadingMarkCompleted
-                      ? 'Loading...'
-                      : '✅ Mark as used'}
-                  </button>
+                  <>
+                    <h3>Ticket details</h3>
+                    {handledTickets.has(ticket.ticketId)
+                      ? null
+                      : (
+                        <button onClick={markHolviTickedCompleted} style={{ marginLeft: 'auto' }}>
+                          {isLoadingMarkCompleted
+                            ? 'Loading...'
+                            : '✅ Mark as used'}
+                        </button>
+                      )}
+                  </>
                 )
                 : null}
             </div>
@@ -119,12 +138,15 @@ export const EventManager = ({ spreadsheetId, range }: Props) => {
                   <div>
                     <b>{ticket.firstName || '-'} {ticket.lastName || '-'}</b>
                     <div>{ticket.email || '-'}</div>
+                    <div className='text-muted'>
+                      <i>{ticket.handledBy}<br /> <small>{ticket.handledAt}</small></i>
+                    </div>
                   </div>
                   <span className='list-status'>
-                    {ticket.isHandled == 'FALSE'
+                    {ticket.isHandled == 'FALSE' && !handledTickets.has(ticket.ticketId)
                       ? <span className='alert alert__error'>Unhandled</span>
                       : <>
-                        <b className='alert alert__success'>Handled</b>{ticket.handledBy} - <small>{ticket.handledAt}</small>
+                        <b className='alert alert__success'>Handled</b>
                       </>
                     }
                   </span>
@@ -141,9 +163,8 @@ export const EventManager = ({ spreadsheetId, range }: Props) => {
               )}
           </div>
         </aside>
-
       </div>
-      <TicketList tickets={tickets || []} />
+      <TicketList tickets={tickets || []} refetch={refetchTickets} handledTickets={handledTickets} />
     </div>
   )
 }

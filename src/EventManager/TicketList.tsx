@@ -3,12 +3,17 @@ import { HolviTicket } from '../hooks/useFetchHolviTickets'
 import './ticketList.css'
 type Props = {
   tickets: HolviTicket[]
+  refetch: () => void
+  handledTickets: Set<string>
 }
 
-const TicketList = ({ tickets }: Props) => {
+const TicketList = ({ tickets, refetch, handledTickets }: Props) => {
   return (
     <div id='ticket-list'>
-      <h3>Tickets</h3>
+      <div>
+        <h3>Tickets</h3>
+        <button onClick={refetch}>🔄 Refresh list</button>
+      </div>
       <ol>
         {tickets.map((ticket) => (
           <li key={ticket.ticketId}>
@@ -16,12 +21,13 @@ const TicketList = ({ tickets }: Props) => {
               <div>
                 <b>{ticket.firstName || '-'} {ticket.lastName || '-'}</b>
                 <div>{ticket.email || '-'}</div>
+                <i className='text-muted'>{ticket.handledBy} - <small>{ticket.handledAt}</small></i>
               </div>
               <span className='list-status'>
-                {ticket.isHandled == 'FALSE'
+                {ticket.isHandled == 'FALSE' && !handledTickets.has(ticket.ticketId)
                   ? <span className='alert alert__error'>Unhandled</span>
                   : <>
-                    <b className='alert alert__success'>Handled</b>{ticket.handledBy} - <small>{ticket.handledAt}</small>
+                    <b className='alert alert__success'>Handled</b>
                   </>
                 }
               </span>

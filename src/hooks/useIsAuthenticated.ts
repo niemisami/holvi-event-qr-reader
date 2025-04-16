@@ -1,44 +1,54 @@
-import { googleLogout, TokenResponse, useGoogleLogin } from '@react-oauth/google'
+import { googleLogout, TokenResponse, useGoogleLogin, useGoogleOneTapLogin } from '@react-oauth/google'
+import { jwtDecode } from 'jwt-decode'
 import { useCallback, useState } from 'react'
 
-const SCOPE = 'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/userinfo.email'
+const SCOPE = 'https://www.googleapis.com/auth/spreadsheets'
+
+const _isAuthenticated = () => {
+  const credentials = localStorage.getItem('tokenResponse')
+  const user = localStorage.getItem('user')
+  return !!credentials && !!user
+}
 
 const useIsAuthenticated = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(() => {
-    const credentials = localStorage.getItem('credentialResponse')
-    return !!credentials
-  })
-  const setCredentials = useCallback((credentialResponse: TokenResponse) => {
-    if(credentialResponse.access_token == null) {
+  const [isAuthenticated, setIsAuthenticated] = useState(() => _isAuthenticated())
+
+  const setCredentials = useCallback((tokenResponse: TokenResponse) => {
+    if(tokenResponse.access_token == null) {
       throw new Error('No access token')
     }
-    localStorage.setItem('credentialResponse', JSON.stringify({
-      ...credentialResponse,
-      accessToken: credentialResponse.access_token,
-      tokenType: credentialResponse.token_type,
-      email: 'TODO: get email somehow'
+    localStorage.setItem('tokenResponse', JSON.stringify({
+      ...tokenResponse,
+      accessToken: tokenResponse.access_token,
+      tokenType: tokenResponse.token_type
     }))
-    setIsAuthenticated(true)
+    setIsAuthenticated(_isAuthenticated)
   }, [])
 
   const logout = useCallback(() => {
-    localStorage.removeItem('credentialResponse')
+    localStorage.removeItem('tokenResponse')
     googleLogout()
     setIsAuthenticated(false)
   }, [])
 
   const login = useGoogleLogin({
     onSuccess: setCredentials,
-    scope: SCOPE,
+    scope: SCOPE
   });
 
-  // useGoogleOneTapLogin({
-  //   onSuccess: creds => {
-  //     console.log(creds)
-  //   }
-  // });
+  useGoogleOneTapLogin({
+    auto_select: true,
+    disabled: isAuthenticated,
+    onSuccess: creds => {
+      if(creds.credential) {
+        const decoded = jwtDecode(creds.credential) as { email: string, name: string }
+        localStorage.setItem('user', JSON.stringify(decoded))
+        setIsAuthenticated(_isAuthenticated)
+      }
+    }
+  });
 
-  return { isAuthenticated, setCredentials, login, logout }
+  return { isAuthenticated, login, logout }
 }
 
 export default useIsAuthenticated

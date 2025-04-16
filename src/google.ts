@@ -7,6 +7,11 @@ export type GoogleSheetConfig = {
   email: string
 }
 
+type GoogleUserConfig = {
+  tokenType: string
+  accessToken: string
+}
+
 const requiredKeys: (keyof GoogleSheetConfig)[] = [
   'spreadsheetId',
   'tokenType',
@@ -26,11 +31,6 @@ export const missingConfigKeys = (config: Partial<GoogleSheetConfig> | null | un
   return requiredKeys.filter(key => config[key] == null || config[key] === '')
 }
 
-/**
- *
- * @param config
- * @returns
- */
 export const getSheetRows = async (config: GoogleSheetConfig) => {
   try {
     const response = await fetch(
@@ -78,6 +78,29 @@ export const updateSheet = async<TSheet>(config: GoogleSheetConfig, data: TSheet
     }
     const result = await response.json()
     return { updatedRows: result.updatedRows } as UpdateSheetResult
+  } catch(error) {
+    console.dir(error, { depth: null })
+    throw error
+  }
+}
+
+
+export const getUserDetails = async (config: GoogleUserConfig) => {
+  try {
+    const response = await fetch(
+      `https://www.googleapis.com/auth/userinfo.email`,
+      {
+        headers: {
+          Authorization: `${config.tokenType} ${config.accessToken}`,
+        }
+      }
+    )
+    if(response.status !== 200) {
+      const result = await response.json()
+      throw new Error(`Error: ${response.status} ${response.statusText} ${result.error.message}`)
+    }
+    const result = await response.json()
+    return (result.values || []) as string[][]
   } catch(error) {
     console.dir(error, { depth: null })
     throw error

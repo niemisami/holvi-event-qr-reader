@@ -2,7 +2,6 @@ import { GoogleOAuthProvider } from '@react-oauth/google'
 import './App.css'
 import Authenticate from './Authenticate.tsx'
 import { Authorized } from './Authorized.tsx'
-import PWABadge from './PWABadge.tsx'
 
 function App() {
   return (
@@ -12,7 +11,6 @@ function App() {
       <Authenticate>
         <Authorized />
       </Authenticate>
-      <PWABadge />
     </GoogleOAuthProvider>
   )
 }

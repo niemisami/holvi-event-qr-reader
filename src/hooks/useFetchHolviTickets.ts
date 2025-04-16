@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { getSheetRows, GoogleSheetConfig, isValidConfig, missingConfigKeys } from '../google'
 import { tryCatch } from '../helpers'
 
 export type HolviTicket = {
   orderNumber: string | null,
   receiptNumber: string | null,
-  ticketId: string | null,
+  ticketId: string,
   price: string | null,
   discountCode: string | null,
   lastName: string | null,
@@ -110,6 +110,11 @@ export const useFetchHolviTickets = (config: GoogleSheetConfig | null) => {
   const [tickets, setTickets] = useState<HolviTicket[] | null>(null)
   const [error, setError] = useState<string | null>(null)
 
+  const [fetchCount, setRefetch] = useState(1)
+  const refetch = useCallback(() => {
+    setRefetch((prev) => prev + 1)
+  }, [])
+
   useEffect(() => {
     if(config == null) {
       return
@@ -133,11 +138,12 @@ export const useFetchHolviTickets = (config: GoogleSheetConfig | null) => {
         setError(error)
         setIsLoading(false)
       })
-  }, [config])
+  }, [config, fetchCount])
   return {
     isLoading,
     error,
-    tickets
+    tickets,
+    refetch
   }
 }
 

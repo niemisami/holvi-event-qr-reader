@@ -48,6 +48,7 @@
 }
 
 #app {
+  position: relative;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
@@ -61,4 +62,8 @@
 
 .text-muted {
   color: #a09ca0;
+}
+
+.reset-sheet-button {
+  margin-left: auto;
 }
